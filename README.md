@@ -1,15 +1,9 @@
-# Basic Sample Hardhat Project
+# KOT-Domains
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+A ENS domain service where users can register and manage their own domains.
 
-Try running some of the following tasks:
+> This project is built on Polygon POS Chain - an EVM compatible blockchain built on top of ethereum.
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+## Why .kot?
+
+Well KOT is an ode to (kenyans on twitter) its the only domain name I could think of as at the moment of building this service.
