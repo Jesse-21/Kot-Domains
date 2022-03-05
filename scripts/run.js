@@ -1,22 +1,42 @@
 const main = async () => {
-  const [owner, randomPerson] = await hre.ethers.getSigners(); // gets wallet address of the owner, and a random person
+  const [owner, superCoder] = await hre.ethers.getSigners(); // gets wallet address of the owner, and a random person
   const domainContractFactory = await hre.ethers.getContractFactory("Domains");
 
   // we pass in "kot" to the constructor, which is the name of the domain
   const domainContract = await domainContractFactory.deploy("kot");
   await domainContract.deployed();
 
-  console.log('Deployed domain contract to: ', domainContract.address);
   console.log('Contract deployed by: ', owner.address);
 
-  const txn = await domainContract.register('young', { value: hre.ethers.utils.parseEther('0.1') });
+  let txn = await domainContract.register('a11y', { value: hre.ethers.utils.parseEther('1234') });
   await txn.wait();
 
-  const address = await domainContract.getAddress('young');
-  console.log('owner of domain young: ', address);
-
+  // how much money is in here?
   const balance = await hre.ethers.provider.getBalance(domainContract.address);
   console.log('Contract balance: ', hre.ethers.utils.formatEther(balance));
+
+  // get funds from contract (as superCoder)
+  try {
+    txn = await domainContract.connect(superCoder).withdraw();
+    await txn.wait();
+  } catch {
+    console.log("withdraw failed");
+  }
+
+  // look in their wallet so we can compare
+  let ownerBalance = await hre.ethers.provider.getBalance(owner.address);
+  console.log('Owner balance before withdrawal: ', hre.ethers.utils.formatEther(ownerBalance));
+
+  // get funds from contract (as owner)
+  txn = await domainContract.connect(owner).withdraw();
+  await txn.wait();
+
+  // fetch balance of contract & owner
+  const contractBalance = await hre.ethers.provider.getBalance(domainContract.address);
+  ownerBalance = await hre.ethers.provider.getBalance(owner.address);
+
+  console.log('Contract balance after withdrawal: ', hre.ethers.utils.formatEther(contractBalance));
+  console.log('Owner balance after withdrawal: ', hre.ethers.utils.formatEther(ownerBalance));
 };
 
 const runMain = async () => {

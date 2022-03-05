@@ -11,6 +11,8 @@ import {Base64} from "./libraries/Base64.sol";
 import "hardhat/console.sol";
 
 contract Domains is ERC721URIStorage {
+    address payable public owner;
+
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -22,12 +24,18 @@ contract Domains is ERC721URIStorage {
     string svgPartTwo = "</text></svg>";
 
     mapping(string => address) public domains;
-    mapping(string => string) public records; // store values
+    mapping(string => string) public records;
+    mapping(uint256 => string) public names;
+
+    error Unauthorized();
+    error AlreadyRegistered();
+    error InvalidName(string name);
 
     // make the contract payable by adding a "payable" modifier
     constructor(string memory _tld) payable ERC721("KOT Name Service", "KNS") {
+        owner = payable(msg.sender);
         tld = _tld;
-        console.log("%s name service for KOT Domains deployed", tld);
+        console.log("%s name service for KOT Domains deployed", _tld);
     }
 
     // calculate price of domain based on the length of the domain name
@@ -45,8 +53,9 @@ contract Domains is ERC721URIStorage {
 
     // A register function that adds their names to our mapping
     function register(string calldata name) public payable {
-        // check that the name is unregistered
-        require(domains[name] == address(0));
+        // check that the name is unregistered and valid
+        if (domains[name] != address(0)) revert AlreadyRegistered();
+        if (!valid(name)) revert InvalidName(name);
 
         uint256 _price = price(name);
         require(msg.value >= _price, "Not enough Matic paid"); // check if enough Matic was paid in the transaction
@@ -89,19 +98,12 @@ contract Domains is ERC721URIStorage {
             abi.encodePacked("data:application/json;base64,", json)
         );
 
-        console.log(
-            "\n--------------------------------------------------------"
-        );
-        console.log("Final tokenURI", finalTokenUri);
-        console.log(
-            "--------------------------------------------------------\n"
-        );
-
         _safeMint(msg.sender, newRecordId);
         _setTokenURI(newRecordId, finalTokenUri);
         domains[name] = msg.sender;
 
         console.log("%s has registered a domain!", msg.sender);
+        names[newRecordId] = name;
         _tokenIds.increment();
     }
 
@@ -112,9 +114,8 @@ contract Domains is ERC721URIStorage {
 
     function setRecord(string calldata name, string calldata record) public {
         // check that the owner is the transaction sender
-        require(domains[name] == msg.sender);
+        if (msg.sender != domains[name]) revert Unauthorized();
         records[name] = record;
-        console.log("%s has set a record for %s", msg.sender, name);
     }
 
     function getRecord(string calldata name)
@@ -123,5 +124,36 @@ contract Domains is ERC721URIStorage {
         returns (string memory)
     {
         return records[name];
+    }
+
+    modifier onlyOwner() {
+        require(isOwner());
+        _;
+    }
+
+    function isOwner() public view returns (bool) {
+        return msg.sender == owner;
+    }
+
+    function withdraw() public onlyOwner {
+        uint256 amount = address(this).balance;
+
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Failed to withdraw Matic");
+    }
+
+    function getAllNames() public view returns (string[] memory) {
+        console.log("Getting all names");
+        string[] memory allNames = new string[](_tokenIds.current());
+        for (uint256 i = 0; i < _tokenIds.current(); i++) {
+            allNames[i] = names[i];
+            console.log("Name for token %d is %s", i, allNames[i]);
+        }
+
+        return allNames;
+    }
+
+    function valid(string calldata name) public pure returns (bool) {
+        return StringUtils.strlen(name) >= 3 && StringUtils.strlen(name) <= 12;
     }
 }
