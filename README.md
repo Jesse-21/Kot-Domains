@@ -7,3 +7,4 @@ A ENS domain service where users can register and manage their own domains.
 ## Why .kot?
 
 Well KOT is an ode to (kenyans on twitter) its the only domain name I could think of as at the moment of building this service.
+.
