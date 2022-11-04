@@ -2,8 +2,8 @@ const main = async () => {
   const [owner, superCoder] = await hre.ethers.getSigners(); // gets wallet address of the owner, and a random person
   const domainContractFactory = await hre.ethers.getContractFactory("Domains");
 
-  // we pass in "kot" to the constructor, which is the name of the domain
-  const domainContract = await domainContractFactory.deploy("kot");
+  // we pass in "artist" to the constructor, which is the name of the domain
+  const domainContract = await domainContractFactory.deploy("artist");
   await domainContract.deployed();
 
   console.log('Contract deployed by: ', owner.address);
