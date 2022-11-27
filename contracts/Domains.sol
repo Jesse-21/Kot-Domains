@@ -32,10 +32,10 @@ contract Domains is ERC721URIStorage {
     error InvalidName(string name);
 
     // make the contract payable by adding a "payable" modifier
-    constructor(string memory _tld) payable ERC721("KOT Name Service", "KNS") {
+    constructor(string memory _tld) payable ERC721("Thirdy Domain Registry", "3rdy") {
         owner = payable(msg.sender);
         tld = _tld;
-        console.log("%s name service for KOT Domains deployed", _tld);
+        console.log("%s name service for Thirdy Domain Registry deployed", _tld);
     }
 
     // calculate price of domain based on the length of the domain name
@@ -43,11 +43,11 @@ contract Domains is ERC721URIStorage {
         uint256 len = StringUtils.strlen(name);
         require(len > 0);
         if (len == 3) {
-            return 5 * 10**17; // 5 MATIC = 5 000 000 000 000 000 000 (18 decimals). We're going with 0.5 Matic because the faucets don't give a lot
+            return 5 * 0; // charges zero for mint because why charge extra for a web3 beb membership token
         } else if (len == 4) {
-            return 3 * 10**17; // To charge smaller amounts, reduce the decimals. This is 0.3
+            return 3 * 0; // charges zero for mint because why charge extra for a web3 beb membership token
         } else {
-            return 1 * 10**17;
+            return 1 * 0; // zero charged for mint on web3 domain for beb membership token
         }
     }
 
@@ -58,7 +58,7 @@ contract Domains is ERC721URIStorage {
         if (!valid(name)) revert InvalidName(name);
 
         uint256 _price = price(name);
-        require(msg.value >= _price, "Not enough Matic paid"); // check if enough Matic was paid in the transaction
+        require(msg.value >= _price, "Not enough Eth paid dum dum"); // check if enough Eth was paid in the transaction
 
         // combine the name passed into the function with the TLD
         string memory _name = string(abi.encodePacked(name, ".", tld));
@@ -84,7 +84,7 @@ contract Domains is ERC721URIStorage {
                     abi.encodePacked(
                         '{"name": "',
                         _name,
-                        '", "description": "A domain on the KOT name service", "image": "data:image/svg+xml;base64,',
+                        '", "description": "A domain on the Thirdy Domain Registry", "image": "data:image/svg+xml;base64,',
                         Base64.encode(bytes(finalSvg)),
                         '","length":"',
                         strLen,
@@ -139,7 +139,7 @@ contract Domains is ERC721URIStorage {
         uint256 amount = address(this).balance;
 
         (bool success, ) = msg.sender.call{value: amount}("");
-        require(success, "Failed to withdraw Matic");
+        require(success, "Failed to withdraw Ether");
     }
 
     function getAllNames() public view returns (string[] memory) {
