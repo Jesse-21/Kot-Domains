@@ -3,7 +3,7 @@ const main = async () => {
   const domainContractFactory = await hre.ethers.getContractFactory("Domains");
 
   // we pass in "artist" to the constructor, which is the name of the domain
-  const domainContract = await domainContractFactory.deploy("artist");
+  const domainContract = await domainContractFactory.deploy("thirdy");
   await domainContract.deployed();
 
   console.log('Contract deployed by: ', owner.address);
