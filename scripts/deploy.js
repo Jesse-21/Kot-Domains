@@ -1,22 +1,22 @@
 const main = async () => {
   const domainContractFactory = await hre.ethers.getContractFactory("Domains");
   // we pass in "artist" to the constructor, which is the name of the domain
-  const domainContract = await domainContractFactory.deploy("artist");
+  const domainContract = await domainContractFactory.deploy("thirdy");
   await domainContract.deployed();
 
   console.log('Deployed domain contract to: ', domainContract.address);
 
-  let txn = await domainContract.register('jesse21', { value: hre.ethers.utils.parseEther('0.1') });
+  let txn = await domainContract.register('j', { value: hre.ethers.utils.parseEther('0.1') });
   await txn.wait();
-  console.log("minted domain jesse21.artist");
+  console.log("minted domain j.thirdy");
 
   // set record
-  txn = await domainContract.setRecord('Jesse21', 'J21!');
+  txn = await domainContract.setRecord('j', '3rdy');
   await txn.wait();
-  console.log("set record for domain jesse21.artist");
+  console.log("set record for domain j.thirdy");
 
-  const address = await domainContract.getAddress('jesse21');
-  console.log('owner of domain jesse21: ', address);
+  const address = await domainContract.getAddress('j');
+  console.log('owner of domain j: ', address);
 
   const balance = await hre.ethers.provider.getBalance(domainContract.address);
   console.log('Contract balance: ', hre.ethers.utils.formatEther(balance));
