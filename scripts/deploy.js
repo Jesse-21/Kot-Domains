@@ -1,6 +1,6 @@
 const main = async () => {
   const domainContractFactory = await hre.ethers.getContractFactory("Domains");
-  // we pass in "artist" to the constructor, which is the name of the domain
+  // we pass in "thirdy" to the constructor, which is the name of the domain
   const domainContract = await domainContractFactory.deploy("thirdy");
   await domainContract.deployed();
 
@@ -11,7 +11,7 @@ const main = async () => {
   console.log("minted domain j.thirdy");
 
   // set record
-  txn = await domainContract.setRecord('j', '3rdy');
+  txn = await domainContract.setRecord('j', 'thirdy');
   await txn.wait();
   console.log("set record for domain j.thirdy");
 
